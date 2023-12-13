@@ -1,6 +1,11 @@
+import "dart:typed_data";
+
 import "package:flutter/material.dart";
 import "package:flutter_svg/svg.dart";
+import "package:image_picker/image_picker.dart";
+import "package:semicolon_project/resources/auth_methods.dart";
 import "package:semicolon_project/utils/colors.dart";
+import "package:semicolon_project/utils/utils.dart";
 import "package:semicolon_project/widgets/text_field_input.dart";
 
 class SignupScreen extends StatefulWidget {
@@ -15,6 +20,8 @@ class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController _passController = TextEditingController();
   final TextEditingController _bioController = TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
+  Uint8List? _image;
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -23,6 +30,32 @@ class _SignupScreenState extends State<SignupScreen> {
     _passController.dispose();
     _bioController.dispose();
     _usernameController.dispose();
+  }
+
+  void selectImage() async {
+    Uint8List image = await pickImage(ImageSource.gallery);
+    setState(() {
+      _image = image;
+    });
+  }
+
+  void signUpUser() async {
+    setState(() {
+      _isLoading = true;
+    });
+    String res = await AuthMethods().signUserUp(
+      email: _emailController.text,
+      password: _passController.text,
+      username: _usernameController.text,
+      bio: _bioController.text,
+      file: _image!,
+    );
+    setState(() {
+      _isLoading = false;
+    });
+    if (res != 'success') {
+      showSnackBar(context, res);
+    }
   }
 
   @override
@@ -47,16 +80,20 @@ class _SignupScreenState extends State<SignupScreen> {
               // Widget to accept/show our selected photo
               Stack(
                 children: [
-                  const CircleAvatar(
-                    radius: 54,
-                    backgroundImage: NetworkImage(
-                        'https://temp-number.sfo3.digitaloceanspaces.com/tname/images/male/74/12.jpg'),
-                  ),
+                  _image != null
+                      ? CircleAvatar(
+                          radius: 54, backgroundImage: MemoryImage(_image!))
+                      : const CircleAvatar(
+                          radius: 54,
+                          backgroundColor: mobileBackgroundColor,
+                          backgroundImage: NetworkImage(
+                              'https://cdn-icons-png.flaticon.com/512/6067/6067648.png'),
+                        ),
                   Positioned(
                     bottom: 70,
                     left: 75,
                     child: IconButton(
-                      onPressed: () {},
+                      onPressed: selectImage,
                       icon: const Icon(Icons.add_to_photos_rounded),
                       iconSize: 21.2,
                       color: pinkColor,
@@ -100,8 +137,15 @@ class _SignupScreenState extends State<SignupScreen> {
               // Sign in button
               const SizedBox(height: 10),
               InkWell(
-                onTap: () {},
+                onTap: signUpUser,
                 child: Container(
+                  child: _isLoading
+                      ? const Center(
+                          child: CircularProgressIndicator(
+                            color: primaryColor,
+                          ),
+                        )
+                      : const Text('Sign Up'),
                   width: double.infinity,
                   alignment: Alignment.center,
                   padding: const EdgeInsets.symmetric(vertical: 12),
@@ -112,7 +156,6 @@ class _SignupScreenState extends State<SignupScreen> {
                         ),
                       ),
                       color: pinkColor),
-                  child: const Text('Sign Up'),
                 ),
               ),
               const SizedBox(height: 12),
