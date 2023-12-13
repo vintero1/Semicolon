@@ -1,6 +1,8 @@
 import "package:flutter/material.dart";
 import "package:flutter_svg/flutter_svg.dart";
+import "package:semicolon_project/resources/auth_methods.dart";
 import "package:semicolon_project/utils/colors.dart";
+import "package:semicolon_project/utils/utils.dart";
 import "package:semicolon_project/widgets/text_field_input.dart";
 
 class LoginScreen extends StatefulWidget {
@@ -21,6 +23,16 @@ class _LoginScreenState extends State<LoginScreen> {
     _passController.dispose();
   }
 
+  void signUserIn() async {
+    String res = await AuthMethods().signUserIn(
+        email: _emailController.text,
+        password: _passController.text);
+        if (res == 'success') {
+        } else {
+          showSnackBar(context, res);
+        }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,7 +50,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 color: primaryColor,
                 height: 64,
               ),
-              
+
               // Text field email input
               const SizedBox(height: 64),
               TextFieldInput(
@@ -46,7 +58,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 hintText: 'E-mail',
                 textInputType: TextInputType.emailAddress,
               ),
-              
+
               // Text field password input
               const SizedBox(height: 24),
               TextFieldInput(
@@ -55,13 +67,13 @@ class _LoginScreenState extends State<LoginScreen> {
                 textInputType: TextInputType.text,
                 isPass: true,
               ),
-              
+
               // Sign in button
               const SizedBox(height: 24),
               InkWell(
-                onTap: () {},
+                onTap: signUserIn,
                 child: Container(
-                  width: double.infinity, 
+                  width: double.infinity,
                   alignment: Alignment.center,
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   decoration: const ShapeDecoration(
@@ -76,7 +88,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               const SizedBox(height: 12),
               Flexible(flex: 2, child: Container()),
-              
+
               // Sign up transition
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,

@@ -17,7 +17,7 @@ class AuthMethods {
     required String bio,
     required Uint8List file,
   }) async {
-    String res = "Some error Occurred";
+    String res = "Sign Up error Occurred";
     try {
       if (email.isNotEmpty ||
           password.isNotEmpty ||
@@ -55,5 +55,25 @@ class AuthMethods {
       return err.toString();
     }
     return res;
+  }
+
+  // Sign In a user
+   Future<String> signUserIn({
+    required String email,
+    required String password,
+    }) async {
+       String res = "Sign In error Occurred";
+
+       try {
+          if (email.isNotEmpty || password.isNotEmpty){
+            await _auth.signInWithEmailAndPassword(email: email, password: password);
+            res = "success";
+          } else {
+            res = "Enter all fields!";
+          }
+       } catch (err) {
+         res = err.toString();
+       }
+       return res;
   }
 }
