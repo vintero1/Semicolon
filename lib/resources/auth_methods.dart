@@ -3,6 +3,7 @@ import "dart:typed_data";
 import "package:cloud_firestore/cloud_firestore.dart";
 import "package:firebase_auth/firebase_auth.dart";
 import "package:flutter/material.dart";
+import "package:semicolon_project/models/user.dart" as model;
 import "package:semicolon_project/resources/storage_methods.dart";
 
 class AuthMethods {
@@ -32,15 +33,21 @@ class AuthMethods {
         String profilePhotoUrl = await StorageMethods()
             .uploadImageToStorage('profilePictures', file, false);
         // Add a user to database
-        await _firestore.collection("users").doc(cred.user!.uid).set({
-          'username': username,
-          'uid': cred.user!.uid,
-          'email': email,
-          'bio': bio,
-          'followers': [],
-          'following': [],
-          'profilePhotoUrl': profilePhotoUrl,
-        });
+
+
+        model.User user = model.User(
+          username: username,
+          uid: cred.user!.uid, 
+          profilePhotoUrl: profilePhotoUrl,
+          email: email, 
+          bio: bio, 
+          followers: [], 
+          following: [],
+          );
+
+
+
+        await _firestore.collection("users").doc(cred.user!.uid).set(user.toJson(),);
 
         res = "success";
       }
