@@ -4,6 +4,10 @@ import "package:flutter/material.dart";
 import "package:flutter_svg/svg.dart";
 import "package:image_picker/image_picker.dart";
 import "package:semicolon_project/resources/auth_methods.dart";
+import "package:semicolon_project/responsive/mobile_screen_layout.dart";
+import "package:semicolon_project/responsive/responsive_layout_screen.dart";
+import "package:semicolon_project/responsive/web_screen_layout.dart";
+import "package:semicolon_project/screens/login_screen.dart";
 import "package:semicolon_project/utils/colors.dart";
 import "package:semicolon_project/utils/utils.dart";
 import "package:semicolon_project/widgets/text_field_input.dart";
@@ -55,7 +59,24 @@ class _SignupScreenState extends State<SignupScreen> {
     });
     if (res != 'success') {
       showSnackBar(context, res);
+    } else {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => const ResponsiveLayout(
+            mobileScreenLayout: MobileScreenLayout(),
+            webScreenLayout: WebScreenLayout(),
+          ),
+        ),
+      );
     }
+  }
+
+  void navigateToSignIn() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const LoginScreen(),
+      ),
+    );
   }
 
   @override
@@ -172,7 +193,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     child: const Text("Already a semicoloner?"),
                   ),
                   GestureDetector(
-                    onTap: () {},
+                    onTap: navigateToSignIn,
                     child: Container(
                       padding: const EdgeInsets.symmetric(
                         vertical: 8,

@@ -1,6 +1,10 @@
 import "package:flutter/material.dart";
 import "package:flutter_svg/flutter_svg.dart";
 import "package:semicolon_project/resources/auth_methods.dart";
+import "package:semicolon_project/responsive/mobile_screen_layout.dart";
+import "package:semicolon_project/responsive/responsive_layout_screen.dart";
+import "package:semicolon_project/responsive/web_screen_layout.dart";
+import "package:semicolon_project/screens/signup_screen.dart";
 import "package:semicolon_project/utils/colors.dart";
 import "package:semicolon_project/utils/utils.dart";
 import "package:semicolon_project/widgets/text_field_input.dart";
@@ -15,6 +19,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passController = TextEditingController();
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -24,13 +29,34 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void signUserIn() async {
+    setState(() {
+      _isLoading = true;
+    });
     String res = await AuthMethods().signUserIn(
-        email: _emailController.text,
-        password: _passController.text);
-        if (res == 'success') {
-        } else {
-          showSnackBar(context, res);
-        }
+        email: _emailController.text, password: _passController.text);
+    if (res == 'success') {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => const ResponsiveLayout(
+            mobileScreenLayout: MobileScreenLayout(),
+            webScreenLayout: WebScreenLayout(),
+          ),
+        ),
+      );
+    } else {
+      showSnackBar(context, res);
+    }
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
+  void navigateToSignUp() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const SignupScreen(),
+      ),
+    );
   }
 
   @override
@@ -73,6 +99,13 @@ class _LoginScreenState extends State<LoginScreen> {
               InkWell(
                 onTap: signUserIn,
                 child: Container(
+                  child: _isLoading
+                      ? const Center(
+                          child: CircularProgressIndicator(
+                            color: primaryColor,
+                          ),
+                        )
+                      : Text('Sign In'),
                   width: double.infinity,
                   alignment: Alignment.center,
                   padding: const EdgeInsets.symmetric(vertical: 12),
@@ -83,7 +116,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                       color: pinkColor),
-                  child: const Text('Sign In'),
                 ),
               ),
               const SizedBox(height: 12),
@@ -100,7 +132,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: const Text("New to semicolon?"),
                   ),
                   GestureDetector(
-                    onTap: () {},
+                    onTap: navigateToSignUp,
                     child: Container(
                       padding: const EdgeInsets.symmetric(
                         vertical: 8,

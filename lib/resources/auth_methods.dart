@@ -44,36 +44,43 @@ class AuthMethods {
 
         res = "success";
       }
-    } on FirebaseAuthException catch(err){
-      if(err.code == 'invalid-email'){
+    } on FirebaseAuthException catch (err) {
+      if (err.code == 'invalid-email') {
         res = 'Bad format of the email!';
-      }else if(err.code == 'weak-password'){
-        res = 'Password is not strong enough! It should be at least 6 characters.'; 
+      } else if (err.code == 'weak-password') {
+        res =
+            'Password is not strong enough! It should be at least 6 characters.';
       }
-    }
-    catch (err) {
+    } catch (err) {
       return err.toString();
     }
     return res;
   }
 
   // Sign In a user
-   Future<String> signUserIn({
+  Future<String> signUserIn({
     required String email,
     required String password,
-    }) async {
-       String res = "Sign In error Occurred";
+  }) async {
+    String res = "Sign In error Occurred";
 
-       try {
-          if (email.isNotEmpty || password.isNotEmpty){
-            await _auth.signInWithEmailAndPassword(email: email, password: password);
-            res = "success";
-          } else {
-            res = "Enter all fields!";
-          }
-       } catch (err) {
-         res = err.toString();
-       }
-       return res;
+    try {
+      if (email.isNotEmpty || password.isNotEmpty) {
+        await _auth.signInWithEmailAndPassword(
+            email: email, password: password);
+        res = "success";
+      } else {
+        res = "Enter all fields!";
+      }
+    } on FirebaseAuthException catch (err) {
+      if (err.code == 'user-not-found') {
+        res = 'This user is not found!';
+      } else if (err.code == 'wrong-password') {
+        res = 'Entered wrond password!';
+      }
+    } catch (err) {
+      res = err.toString();
+    }
+    return res;
   }
 }
