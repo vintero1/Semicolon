@@ -1,6 +1,7 @@
 import "package:flutter/cupertino.dart";
 import "package:flutter/material.dart";
 import "package:semicolon_project/utils/colors.dart";
+import "package:semicolon_project/utils/dimensions.dart";
 
 class MobileScreenLayout extends StatefulWidget {
   const MobileScreenLayout({Key? key}) : super(key: key);
@@ -38,13 +39,7 @@ class _MobileScreenLayoutState extends State<MobileScreenLayout> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: PageView(
-        children: [
-          Text('feed'),
-          Text('search'),
-          Text('post'),
-          Text('notification'),
-          Text('profile'),
-        ],
+        children: homeScreenItems,
         physics: const AlwaysScrollableScrollPhysics(),
         controller: pageController,
         onPageChanged: onPageChanged,
